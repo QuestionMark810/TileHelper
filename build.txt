@@ -1,0 +1,3 @@
+displayName = Tile Helper
+author = QuestionMark
+version = 0.1
