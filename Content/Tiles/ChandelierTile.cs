@@ -1,10 +1,10 @@
-using TileHelper.Common;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.GameContent.Drawing;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ObjectData;
+using TileHelper.Common;
 
 namespace TileHelper.Content.Tiles;
 
@@ -61,6 +61,25 @@ public class ChandelierTile : FurnitureTile, ILightTile
             glowColor = color;
 		}
 	}
+
+    /// <inheritdoc/>
+    public override void GetTileFlameData(int i, int j, ref TileDrawing.TileFlameData tileFlameData)
+    {
+        if (DistortGlow && Helpers.TryGetGlowmask(i, j, out Texture2D texture, out Color color))
+		{
+            tileFlameData.flameSeed = Main.TileFrameSeed ^ (ulong)(((long)i << 32) | (uint)j);
+            tileFlameData.flameTexture = texture;
+            tileFlameData.flameColor = (color * 0.3f) with { A = 0 };
+            tileFlameData.flameCount = 7;
+
+            tileFlameData.flameRangeXMin = -10;
+            tileFlameData.flameRangeXMax = 11;
+            tileFlameData.flameRangeYMin = -10;
+            tileFlameData.flameRangeYMax = 1;
+            tileFlameData.flameRangeMultX = 0.15f;
+            tileFlameData.flameRangeMultY = 0.35f;
+        }
+    }
 
     /// <inheritdoc/>
     public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)

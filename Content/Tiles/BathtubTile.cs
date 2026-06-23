@@ -17,7 +17,6 @@ public class BathtubTile : FurnitureTile
 		Main.tileNoAttach[Type] = true;
 		Main.tileLavaDeath[Type] = false;
 		Main.tileFrameImportant[Type] = true;
-		Main.tileLighted[Type] = true;
 
 		TileObjectData.newTile.CopyFrom(TileObjectData.Style4x2);
 		TileObjectData.newTile.StyleHorizontal = true;

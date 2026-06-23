@@ -18,8 +18,8 @@ public static class Helpers
         return (left, top);
     }
 
-    /// <summary> Safely gets the <see cref="ModItem"/> associated with the provided <paramref name="modTile"/>. </summary>
-    public static bool TryGetTileItem(ModTile modTile, out ModItem modItem) => modTile.Mod.TryFind(modTile.Name + "Item", out modItem);
+    /// <summary> Safely gets the <see cref="ModItem"/> associated with the provided <paramref name="blockType"/>. </summary>
+    public static bool TryGetBlockItem(ModBlockType blockType, out ModItem modItem) => blockType.Mod.TryFind(blockType.Name + "Item", out modItem);
 
     /// <summary> Gets the draw position of the tile at the provided coordinates. </summary>
     public static Vector2 GetTileOffset(int i, int j)
@@ -62,6 +62,6 @@ public static class Helpers
         return texture;
     }
 
-    /// <summary> Creates a new <see cref="AutoloadedPlaceable"/> for <paramref name="modTile"/>. </summary>
-    public static bool CreateTileItem(ModTile modTile) => modTile.Mod.AddContent(new AutoloadedPlaceable(modTile));
+    /// <summary> Creates a new <see cref="AutoloadedPlaceable"/> for <paramref name="blockType"/>. </summary>
+    public static bool CreateBlockItem(ModBlockType blockType) => blockType.Mod.AddContent(new AutoloadedPlaceable(blockType));
 }

@@ -2,7 +2,7 @@
 
 namespace TileHelper.Content;
 
-public class AutoloadedPlaceable(ModTile modTile, AutoloadedPlaceable.RecipeDelegate recipe = null) : ModItem
+public class AutoloadedPlaceable : ModItem
 {
     /// <summary> Recipe delegate for autoloaded placeables. </summary>
     public delegate void RecipeDelegate(ModItem modItem);
@@ -14,33 +14,76 @@ public class AutoloadedPlaceable(ModTile modTile, AutoloadedPlaceable.RecipeDele
     /// <inheritdoc/>
     protected override bool CloneNewInstances => true;
 
-    /// <summary> The tile type this item was created from. </summary>
-    public int TileType { get; private set; } = modTile.Type;
+    /// <summary> The block type this item was created from. Can be a <see cref="ModWall"/> or <see cref="ModTile"/>. </summary>
+    public ModBlockType BlockType //Avoid storing ModBlockType directly due to type data truncation
+    {
+        get
+        {
+            return (_tileType == -1) ? WallLoader.GetWall(_wallType) : TileLoader.GetTile(_tileType);
+        }
+        set
+        {
+            if (value is ModTile)
+                _tileType = value.Type;
+            else if (value is ModWall)
+                _wallType = value.Type;
+        }
+    }
 
-    private string _name = modTile.Name + "Item";
-    private string _texture = modTile.Texture + "Item";
+    private int _tileType, _wallType;
+
+    private string _name;
+    private string _texture;
+    private RecipeDelegate _recipe;
+
+    /// <summary> Creates a new item from <paramref name="blockType"/>. Only <see cref="ModWall"/> and <see cref="ModTile"/> are fully supported. </summary>
+    public AutoloadedPlaceable(ModBlockType blockType, RecipeDelegate recipe = null)
+    {
+        BlockType = blockType;
+
+        _name = blockType.Name + "Item";
+        _texture = blockType.Texture + "Item";
+        _recipe = recipe;
+    }
 
     /// <inheritdoc/>
     public override ModItem Clone(Item newEntity)
     {
         AutoloadedPlaceable item = base.Clone(newEntity) as AutoloadedPlaceable;
 
-        item.TileType = TileType;
+        item.BlockType = BlockType;
         item._name = _name;
         item._texture = _texture;
+        item._recipe = _recipe;
 
         return item;
     }
 
     /// <inheritdoc/>
-    public override void SetDefaults()
+    public override void SetStaticDefaults()
     {
-        Item.DefaultToPlaceableTile(TileType);
+        Item.ResearchUnlockCount = DataStructures.GetResearchCount(this);
 
-        if (TileLoader.GetTile(TileType) is FurnitureTile furnitureTile && DataStructures.CoinValues.TryGetValue(furnitureTile.FurnitureName, out int value))
-            Item.value = value; //Automatically set the item value corresponding to a standard furniture item
+        if (BlockType is ICreateItem iCreateItem)
+            iCreateItem.SetItemStaticDefaults(this);
     }
 
     /// <inheritdoc/>
-    public override void AddRecipes() => recipe?.Invoke(this);
+    public override void SetDefaults()
+    {
+        if (BlockType is ModTile)
+        {
+            Item.DefaultToPlaceableTile(BlockType.Type);
+
+            if (TileLoader.GetTile(BlockType.Type) is FurnitureTile furnitureTile && DataStructures.CoinValues.TryGetValue(furnitureTile.FurnitureName, out int value))
+                Item.value = value; //Automatically set the item value corresponding to a standard furniture item
+        }
+        else if (BlockType is ModWall)
+        {
+            Item.DefaultToPlaceableWall(BlockType.Type);
+        }
+    }
+
+    /// <inheritdoc/>
+    public override void AddRecipes() => _recipe?.Invoke(this);
 }

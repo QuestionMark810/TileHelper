@@ -65,7 +65,7 @@ public abstract class FurnitureTile : ModTile
     /// <inheritdoc/>
     public override void SetStaticDefaults()
     {
-        if (Helpers.TryGetTileItem(this, out ModItem modItem))
+        if (Helpers.TryGetBlockItem(this, out ModItem modItem))
             RegisterItemDrop(modItem.Type);
     }
 }
