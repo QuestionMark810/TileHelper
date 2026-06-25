@@ -129,9 +129,10 @@ public class Autoloader : Mod
     {
         Mod = mod;
 
-        mod.AddContent<ICreateItem.CreateItemSystem>();
-        mod.AddContent<ICreateItem.CreateItemDefaults>();
-        
+        mod.AddContent<ILoadItem.LoadItemSystem>();
+        mod.AddContent<ILoadItem.LoadItemDefaults>();
+        mod.AddContent<GlowmaskTile>();
+
         GetLoadableTypes();
     }
 }

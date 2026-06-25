@@ -7,14 +7,15 @@ using Terraria.ID;
 
 namespace TileHelper.Common;
 
-public class GlowmaskTile : ILoadable
+public sealed class GlowmaskTile : GlobalTile
 {
-    public delegate Color VertexColor(int i, int j);
+    public delegate Color CoordinateColor(int i, int j);
 
-    public readonly record struct Glowmask(Asset<Texture2D> Texture, VertexColor Color);
+    /// <summary> Contains tile glowmask drawing information. </summary>
+    public readonly record struct Glowmask(Asset<Texture2D> Texture, CoordinateColor Color);
 
     /// <inheritdoc/>
-    public void Load(Mod mod) => IL_TileDrawing.GetTileDrawData += InjectGlowmaskData;
+    public override void Load() => IL_TileDrawing.GetTileDrawData += InjectGlowmaskData;
 
     private static void LogError(Mod mod, string title, string message) => mod.Logger.Warn($"IL edit '{title}' failed! " + message);
 
@@ -87,5 +88,87 @@ public class GlowmaskTile : ILoadable
         }
     }
 
-    public void Unload() { }
+    /// <inheritdoc/>
+    public override void PostDraw(int i, int j, int type, SpriteBatch spriteBatch)
+    {
+        if (Helpers.TryGetGlowmask(i, j, out Texture2D texture, out Color color))
+        {
+            Tile tile = Main.tile[i, j];
+            if (tile.Slope != SlopeType.Solid || tile.IsHalfBlock) //This method can draw slopes
+                DrawSlopedGlowmask(i, j, spriteBatch, texture, color);
+        }
+    }
+
+    /// <summary> Draws the provided tile as a slope. </summary>
+    public static void DrawSlopedGlowmask(int i, int j, SpriteBatch spriteBatch, Texture2D texture, Color color)
+    {
+        Tile tile = Main.tile[i, j];
+        int frameX = tile.TileFrameX;
+        int frameY = tile.TileFrameY;
+
+        int width = 16;
+        int height = 16;
+        Vector2 position = Helpers.GetTileOffset(i, j);
+
+        if (tile.Slope == 0 && !tile.IsHalfBlock || Main.tileSolid[tile.TileType] && Main.tileSolidTop[tile.TileType]) //second one should be for platforms
+            spriteBatch.Draw(texture, position, new Rectangle(frameX, frameY, width, height), color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+        else if (tile.IsHalfBlock)
+            spriteBatch.Draw(texture, new Vector2(position.X, position.Y + 8), new Rectangle(frameX, frameY, width, 8), color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+        else
+        {
+            SlopeType b = tile.Slope;
+            Rectangle frame;
+
+            if (b is SlopeType.SlopeDownLeft or SlopeType.SlopeDownRight)
+            {
+                int length;
+                int height2;
+
+                for (int a = 0; a < 8; ++a)
+                {
+                    if (b == SlopeType.SlopeDownRight)
+                    {
+                        length = 16 - a * 2 - 2;
+                        height2 = 14 - a * 2;
+                    }
+                    else
+                    {
+                        length = a * 2;
+                        height2 = 14 - length;
+                    }
+
+                    frame = new Rectangle(frameX + length, frameY, 2, height2);
+                    spriteBatch.Draw(texture, new Vector2(position.X + length, position.Y + a * 2), frame, color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                }
+
+                frame = new Rectangle(frameX, frameY + 14, 16, 2);
+                spriteBatch.Draw(texture, new Vector2(position.X, position.Y + 14), frame, color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+            }
+            else
+            {
+                int length;
+                int height2;
+
+                for (int a = 0; a < 8; ++a)
+                {
+                    if (b == SlopeType.SlopeUpLeft)
+                    {
+                        length = a * 2;
+                        height2 = 16 - length;
+                    }
+                    else
+                    {
+                        length = 16 - a * 2 - 2;
+                        height2 = 16 - a * 2;
+                    }
+
+                    frame = new Rectangle(frameX + length, frameY + 16 - height2, 2, height2);
+                    spriteBatch.Draw(texture, new Vector2(position.X + length, position.Y), frame, color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                }
+
+                frame = new Rectangle(frameX, frameY, 16, 2);
+                spriteBatch.Draw(texture, position, frame, color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+            }
+        }
+    }
 }

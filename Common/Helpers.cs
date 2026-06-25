@@ -1,7 +1,7 @@
-﻿using TileHelper.Content;
-using Terraria.GameContent;
+﻿using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ObjectData;
+using TileHelper.Content;
 
 namespace TileHelper.Common;
 
@@ -25,11 +25,13 @@ public static class Helpers
     public static Vector2 GetTileOffset(int i, int j)
     {
         TileObjectData data = TileObjectData.GetTileData(Main.tile[i, j]);
-        return new Vector2(i, j) * 16 - Main.screenPosition + (Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange)) + new Vector2(data.DrawXOffset, data.DrawYOffset);
+        Vector2 drawOffset = (data == null) ? Vector2.Zero : new Vector2(data.DrawXOffset, data.DrawYOffset);
+
+        return new Vector2(i, j) * 16 - Main.screenPosition + (Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange)) + drawOffset;
     }
 
     /// <summary> Conveniently gets <see cref="ModTexturedType.Texture"/> + "_Glow" alongside the provided <paramref name="color"/>, white if null. </summary>
-    public static GlowmaskTile.Glowmask RequestGlowmask(ModTexturedType modType, GlowmaskTile.VertexColor color = null) => new(ModContent.Request<Texture2D>(modType.Texture + "_Glow"), color);
+    public static GlowmaskTile.Glowmask RequestGlowmask(ModTexturedType modType, GlowmaskTile.CoordinateColor color = null) => new(ModContent.Request<Texture2D>(modType.Texture + "_Glow"), color);
 
     /// <summary> Attempts to get the glowmask from the tile at the provided coordinates. </summary>
     public static bool TryGetGlowmask(int i, int j, out Texture2D texture, out Color color)

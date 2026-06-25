@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Terraria.ID;
 
 namespace TileHelper.Common;
 
-/// <summary> Enables item autoloading for the attached ModTile. </summary>
-public interface ICreateItem
+/// <summary> Enables item autoloading for the attached <see cref="ModTile"/> or <see cref="ModWall"/>. </summary>
+public interface ILoadItem
 {
-    internal class CreateItemSystem : ModSystem
+    internal class LoadItemSystem : ModSystem
     {
         public ModBlockType[] InterfaceTypes
         {
@@ -18,13 +19,13 @@ public interface ICreateItem
 
                     foreach (ModTile modTile in Mod.GetContent<ModTile>())
                     {
-                        if (modTile is ICreateItem)
+                        if (modTile is ILoadItem)
                             result.Add(modTile);
                     }
 
                     foreach (ModWall modWall in Mod.GetContent<ModWall>())
                     {
-                        if (modWall is ICreateItem)
+                        if (modWall is ILoadItem)
                             result.Add(modWall);
                     }
 
@@ -39,13 +40,11 @@ public interface ICreateItem
 
         public override void OnModLoad()
         {
-            OnAutoloadItems?.Invoke(Context.Before);
-
             foreach (ModBlockType blockType in InterfaceTypes)
                 Helpers.CreateBlockItem(blockType);
 
-            OnAutoloadItems?.Invoke(Context.After);
-            OnAutoloadItems = null;
+            PostAutoloadItems?.Invoke();
+            PostAutoloadItems = null;
         }
 
         public override void SetStaticDefaults()
@@ -68,12 +67,12 @@ public interface ICreateItem
             foreach (ModBlockType blockType in InterfaceTypes)
             {
                 if (Helpers.TryGetBlockItem(blockType, out ModItem modItem))
-                    (blockType as ICreateItem).AddItemRecipes(modItem);
+                    (blockType as ILoadItem).AddItemRecipes(modItem);
             }
         }
     }
 
-    internal class CreateItemDefaults : GlobalItem
+    internal class LoadItemDefaults : GlobalItem
     {
         public override void SetDefaults(Item entity)
         {
@@ -81,14 +80,23 @@ public interface ICreateItem
             {
                 int createType = (entity.createTile == -1) ? entity.createWall : entity.createTile;
 
-                if (TileLoader.GetTile(createType) is ModTile modTile && modTile is ICreateItem iCreateItem)
+                if (TileLoader.GetTile(createType) is ModTile modTile && modTile is ILoadItem iCreateItem)
                     iCreateItem.SetItemDefaults(entity.ModItem);
             }
         }
     }
 
-    /// <summary> Raised before and after placeable items are autoloaded. </summary>
-    public static event ContextDelegate OnAutoloadItems;
+    /// <summary> Raised after placeable items are autoloaded. </summary>
+    public static event Action PostAutoloadItems;
+
+    /// <summary> Returns the autoloaded <see cref="ModItem"/> associated with this instance. </summary>
+    public int ItemType => Mod.Find<ModItem>(Name + "Item").Type;
+
+    /// <summary> The mod this instance belongs to. </summary>
+    public Mod Mod { get; }
+
+    /// <summary> The name of this instance. </summary>
+    public string Name { get; }
 
     /// <summary> Sets the static defaults for <paramref name="modItem"/>. </summary>
     public void SetItemStaticDefaults(ModItem modItem) { }

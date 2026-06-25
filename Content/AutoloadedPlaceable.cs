@@ -64,7 +64,7 @@ public class AutoloadedPlaceable : ModItem
     {
         Item.ResearchUnlockCount = DataStructures.GetResearchCount(this);
 
-        if (BlockType is ICreateItem iCreateItem)
+        if (BlockType is ILoadItem iCreateItem)
             iCreateItem.SetItemStaticDefaults(this);
     }
 
