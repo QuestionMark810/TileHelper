@@ -24,7 +24,7 @@ public class CandelabraTile : FurnitureTile, ILightTile
 		Main.tileLighted[Type] = true;
 		Main.tileLavaDeath[Type] = true;
 
-		Sets.TileGlowmask[Type] = Helpers.RequestGlowmask(this);
+		TileHelperSets.TileGlowmask[Type] = Helpers.RequestGlowmask(this);
 
 		TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
 		TileObjectData.newTile.StyleHorizontal = true;

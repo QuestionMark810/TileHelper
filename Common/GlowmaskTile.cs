@@ -68,7 +68,7 @@ public sealed class GlowmaskTile : GlobalTile
     //Modify GetTileDrawData to include our own data, which is more versatile than DrawEffects. Useful for when things like wind-affected tiles and vines are drawn using vanilla methods
     private static void ModifyData(int typeCache, int i, int j, ref Texture2D glowTexture, ref Color glowColor, ref Rectangle glowSourceRect)
     {
-        if (Sets.TileGlowmask[typeCache] is Glowmask glowmask && glowmask != default)
+        if (TileHelperSets.TileGlowmask[typeCache] is Glowmask glowmask && glowmask != default)
         {
             var tile = Main.tile[i, j];
 

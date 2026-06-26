@@ -31,7 +31,7 @@ public class ChandelierTile : FurnitureTile, ILightTile
 		Main.tileLighted[Type] = true;
 		Main.tileLavaDeath[Type] = true;
 
-        Sets.TileGlowmask[Type] = Helpers.RequestGlowmask(this);
+        TileHelperSets.TileGlowmask[Type] = Helpers.RequestGlowmask(this);
         TileID.Sets.MultiTileSway[Type] = true;
 
 		TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);

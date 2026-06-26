@@ -36,7 +36,7 @@ public static class Helpers
     /// <summary> Attempts to get the glowmask from the tile at the provided coordinates. </summary>
     public static bool TryGetGlowmask(int i, int j, out Texture2D texture, out Color color)
     {
-        if (Sets.TileGlowmask[Main.tile[i, j].TileType] is GlowmaskTile.Glowmask glowmask && glowmask != default)
+        if (TileHelperSets.TileGlowmask[Main.tile[i, j].TileType] is GlowmaskTile.Glowmask glowmask && glowmask != default)
         {
             texture = glowmask.Texture.Value;
             color = glowmask.Color?.Invoke(i, j) ?? Color.White;

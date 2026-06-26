@@ -114,8 +114,9 @@ public static class DataStructures
     }
 }
 
+/// <summary> Provides sets to reference static tile information by tile type, like <see cref="TileID.Sets"/>. </summary>
 [ReinitializeDuringResizeArrays]
-public static class Sets
+public static class TileHelperSets
 {
     /// <summary> Stores custom tile glowmasks. </summary>
     public static readonly GlowmaskTile.Glowmask[] TileGlowmask = TileID.Sets.Factory.CreateNamedSet("TileGlowmask").RegisterCustomSet<GlowmaskTile.Glowmask>(default);

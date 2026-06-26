@@ -23,7 +23,7 @@ public class CandleTile : FurnitureTile, ILightTile
 		Main.tileLighted[Type] = true;
 		Main.tileLavaDeath[Type] = true;
 
-        Sets.TileGlowmask[Type] = Helpers.RequestGlowmask(this);
+        TileHelperSets.TileGlowmask[Type] = Helpers.RequestGlowmask(this);
 
         TileObjectData.newTile.CopyFrom(TileObjectData.StyleOnTable1x1);
 		TileObjectData.newTile.StyleHorizontal = true;
