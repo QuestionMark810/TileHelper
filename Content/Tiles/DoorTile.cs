@@ -13,7 +13,7 @@ namespace TileHelper.Content.Tiles;
 [FurnitureType]
 public class DoorTile : FurnitureTile
 {
-    /// <inheritdoc/>
+    /// <summary> The tile type of this door's when open. </summary>
     public int OpenType => (_openType == -1) ? _openType = Mod.Find<ModTile>(Name + "Open").Type : _openType;
 
     private int _openType = -1;
@@ -134,15 +134,21 @@ public class DoorTile : FurnitureTile
 
 public class AutoloadedDoorOpen(ModTile parentTile) : ModTile
 {
+	/// <inheritdoc/>
 	public override string Name => _name;
 
+	/// <inheritdoc/>
 	public override string Texture => _texture;
 
-	public readonly int ClosedType = parentTile.Type;
+    /// <summary> The tile type of this door's when closed. </summary>
+    public int ClosedType => (_closedType == -1) ? _closedType = Mod.Find<ModTile>(_name.Remove(_name.Length - "Open".Length)).Type : _closedType;
 
-	private readonly string _name = parentTile.Name + "Open";
+    private int _closedType = -1;
+
+    private readonly string _name = parentTile.Name + "Open";
     private readonly string _texture = parentTile.Texture;
 
+    /// <inheritdoc/>
     public override void SetStaticDefaults()
 	{
 		Main.tileFrameImportant[Type] = true;
@@ -209,8 +215,10 @@ public class AutoloadedDoorOpen(ModTile parentTile) : ModTile
 		DustType = -1;
 	}
 
+	/// <inheritdoc/>
 	public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
 
+	/// <inheritdoc/>
 	public override void MouseOver(int i, int j)
 	{
 		Player player = Main.LocalPlayer;
