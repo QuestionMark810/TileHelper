@@ -30,19 +30,29 @@ public class AutoloadedPlaceable : ModItem
         }
     }
 
-    private int _tileType, _wallType;
+    private int _tileType = -1, _wallType = -1;
 
     private string _name;
     private string _texture;
     private RecipeDelegate _recipe;
 
-    /// <summary> Creates a new item from <paramref name="blockType"/>. Only <see cref="ModWall"/> and <see cref="ModTile"/> are fully supported. </summary>
-    public AutoloadedPlaceable(ModBlockType blockType, RecipeDelegate recipe = null)
+    /// <summary> Creates a new item from <paramref name="modTile"/>. </summary>
+    public AutoloadedPlaceable(ModTile modTile, RecipeDelegate recipe = null)
     {
-        BlockType = blockType;
+        BlockType = modTile;
 
-        _name = blockType.Name + "Item";
-        _texture = blockType.Texture + "Item";
+        _name = modTile.Name + "Item";
+        _texture = modTile.Texture + "Item";
+        _recipe = recipe;
+    }
+
+    /// <summary> Creates a new item from <paramref name="modWall"/>. </summary>
+    public AutoloadedPlaceable(ModWall modWall, RecipeDelegate recipe = null)
+    {
+        BlockType = modWall;
+
+        _name = modWall.Name + "Item";
+        _texture = modWall.Texture + "Item";
         _recipe = recipe;
     }
 

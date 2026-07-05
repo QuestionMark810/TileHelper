@@ -41,7 +41,12 @@ public interface ILoadItem
         public override void OnModLoad()
         {
             foreach (ModBlockType blockType in InterfaceTypes)
-                Helpers.CreateBlockItem(blockType);
+            {
+                if (blockType is ModTile modTile)
+                    Helpers.CreateTileItem(modTile);
+                else if (blockType is ModWall modWall)
+                    Helpers.CreateWallItem(modWall);
+            }
 
             PostAutoloadItems?.Invoke();
             PostAutoloadItems = null;

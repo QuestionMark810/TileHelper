@@ -64,6 +64,9 @@ public static class Helpers
         return texture;
     }
 
-    /// <summary> Creates a new <see cref="AutoloadedPlaceable"/> for <paramref name="blockType"/>. </summary>
-    public static bool CreateBlockItem(ModBlockType blockType) => blockType.Mod.AddContent(new AutoloadedPlaceable(blockType));
+    /// <summary> Creates a new <see cref="AutoloadedPlaceable"/> for <paramref name="modTile"/>. </summary>
+    public static bool CreateTileItem(ModTile modTile) => modTile.Mod.AddContent(new AutoloadedPlaceable(modTile));
+
+    /// <summary> Creates a new <see cref="AutoloadedPlaceable"/> for <paramref name="modWall"/>. </summary>
+    public static bool CreateWallItem(ModWall modWall) => modWall.Mod.AddContent(new AutoloadedPlaceable(modWall));
 }
